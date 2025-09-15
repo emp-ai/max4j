@@ -45,7 +45,7 @@ public class EditBotMessage extends BotMethod {
   PhotoAttachmentRequestPayload photo;
 
   @Override
-  protected MethodType getMethod() {
+  public MethodType getMethod() {
     return BOT_INFO_EDIT;
   }
 }
