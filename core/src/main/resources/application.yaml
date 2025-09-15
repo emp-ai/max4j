@@ -1,0 +1,5 @@
+bittersweet:
+  max:
+    api-key: ${MAX_API_KEY:}
+    enabled: ${MAX_API_KEY:}
+    client-url: ${MAX_CLIENT_UR:https://botapi.max.ru}

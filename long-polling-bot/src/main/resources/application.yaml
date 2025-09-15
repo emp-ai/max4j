@@ -1,0 +1,4 @@
+bittersweet:
+  max:
+    enabled: ${MAX_API_KEY:}
+    api-key: ${MAX_API_KEY:}

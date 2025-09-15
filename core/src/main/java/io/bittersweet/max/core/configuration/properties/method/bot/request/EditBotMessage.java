@@ -1,0 +1,51 @@
+package io.bittersweet.max.core.configuration.properties.method.bot.request;
+
+import static io.bittersweet.max.core.configuration.properties.method.enums.MethodType.BOT_INFO_EDIT;
+
+import io.bittersweet.max.core.configuration.properties.method.BotMethod;
+import io.bittersweet.max.core.configuration.properties.method.bot.response.BotCommand;
+import io.bittersweet.max.core.configuration.properties.method.enums.MethodType;
+import jakarta.validation.constraints.Size;
+import java.util.List;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import org.jetbrains.annotations.Nullable;
+
+@Value
+@Builder
+@EqualsAndHashCode(callSuper = true)
+public class EditBotMessage extends BotMethod {
+
+  /** User's first name */
+  @Nullable
+  String firstName;
+
+  /** User's last name */
+  @Nullable
+  String lastName;
+
+  /** User's name */
+  @Nullable
+  @Deprecated(forRemoval = true, since = "Use MeResponse.firstName instead")
+  String name;
+
+  /** User's description, max length = 16000 */
+  @Nullable
+  @Size(min = 1, max = 16000)
+  String description;
+
+  /** Available bot commands; Send empty list is wants to remove commands */
+  @Nullable
+  @Size(max = 32)
+  List<BotCommand> commands;
+
+  /** Request to load bot photo */
+  @Nullable
+  PhotoAttachmentRequestPayload photo;
+
+  @Override
+  protected MethodType getMethod() {
+    return BOT_INFO_EDIT;
+  }
+}
