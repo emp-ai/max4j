@@ -1,0 +1,20 @@
+package io.bittersweet.max.core.configuration.properties.method.enums;
+
+public enum UpdateType {
+  MESSAGE_CREATED,
+  MESSAGE_CALLBACK,
+  MESSAGE_EDITED,
+  MESSAGE_REMOVED,
+  BOT_ADDED,
+  BOT_REMOVED,
+  DIALOG_MUTED,
+  DIALOG_UNMUTED,
+  DIALOG_CLEARED,
+  DIALOG_REMOVED,
+  USER_ADDED,
+  USER_REMOVED,
+  BOT_STARTER,
+  BOT_STOPPED,
+  CHAT_TITLE_CHANGED,
+  MESSAGE_CHAT_CREATED
+}

@@ -1,4 +1,5 @@
 bittersweet:
   max:
-    enabled: ${MAX_API_KEY:}
-    api-key: ${MAX_API_KEY:}
+    enabled: ${MAX_API_KEY:true}
+    api-key: ${MAX_API_KEY:test}
+    client-url: ${MAX_CLIENT_URL:https://botapi.max.ru/}

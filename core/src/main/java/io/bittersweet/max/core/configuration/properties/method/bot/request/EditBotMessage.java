@@ -3,8 +3,9 @@ package io.bittersweet.max.core.configuration.properties.method.bot.request;
 import static io.bittersweet.max.core.configuration.properties.method.enums.MethodType.BOT_INFO_EDIT;
 
 import io.bittersweet.max.core.configuration.properties.method.BotMethod;
-import io.bittersweet.max.core.configuration.properties.method.bot.response.BotCommand;
+import io.bittersweet.max.core.configuration.properties.method.model.command.BotCommand;
 import io.bittersweet.max.core.configuration.properties.method.enums.MethodType;
+import io.bittersweet.max.core.configuration.properties.method.model.image.PhotoAttachmentRequestPayload;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.Builder;
