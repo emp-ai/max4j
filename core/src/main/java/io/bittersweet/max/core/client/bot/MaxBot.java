@@ -36,8 +36,8 @@ public class MaxBot {
 
   private final MaxBotClient client;
 
-  public <T extends BotMethod> BotResponse execute(@NotNull T method) {
-    return switch (method.getMethod()) {
+  public <T extends BotResponse> T execute(@NotNull BotMethod method) {
+    BotResponse response = switch (method.getMethod()) {
       case BOT_INFO -> client.getBotInfo();
       case BOT_INFO_EDIT -> client.getBotInfo((EditBotMessage) method);
       case CHATS_LIST -> client.getChats((ChatsListMessage) method);
@@ -119,5 +119,6 @@ public class MaxBot {
         yield client.pollUpdates(param);
       }
     };
+    return (T) response;
   }
 }
