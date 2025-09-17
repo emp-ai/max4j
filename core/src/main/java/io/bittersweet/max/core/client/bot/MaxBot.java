@@ -34,15 +34,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "bittersweet.max.enabled", havingValue = "true")
-public class MaxBot {
+public final class MaxBot {
 
   private final MaxBotClient client;
 
-  public   <T extends BotResponse> T execute(@NotNull BotMethod method) {
+  public <T extends BotResponse> T execute(@NotNull BotMethod method) {
+    return methodProvider(method);
+  }
 
-  };
-
-  private  <T extends BotResponse> T execute(@NotNull BotMethod method) {
+  private  <T extends BotResponse> T methodProvider(@NotNull BotMethod method) {
     BotResponse response = switch (method.getMethod()) {
       case BOT_INFO -> client.getBotInfo();
       case BOT_INFO_EDIT -> client.getBotInfo((EditBotMessage) method);
