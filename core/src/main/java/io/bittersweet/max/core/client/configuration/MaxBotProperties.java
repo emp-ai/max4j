@@ -21,9 +21,11 @@ public class MaxBotProperties {
   @NotEmpty
   private String apiKey;
 
+  /** MAX bot official url */
   @NotEmpty
-  private String clientUrl;
+  private String clientUrl = "https://botapi.max.ru";
 
+  /** Configuration for long-polling bot */
   @Valid
   @NotNull
   private BotConfig longPolling;

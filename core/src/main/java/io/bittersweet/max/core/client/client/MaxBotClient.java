@@ -25,9 +25,9 @@ import io.bittersweet.max.core.method.subscription.response.GetSubscriptionRespo
 import io.bittersweet.max.core.method.subscription.response.Updates;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +55,7 @@ public interface MaxBotClient {
   BotInfoUser getBotInfo(@RequestBody @Valid EditBotMessage body);
 
   @GetMapping(CHATS)
-  ChatsListResponse getChats(@ModelAttribute @Valid ChatsListMessage params);
+  ChatsListResponse getChats(@SpringQueryMap @Valid ChatsListMessage params);
 
   @GetMapping(CHATS_BY_LINK)
   Chat getChatByLink(@PathVariable @Pattern(regexp = "@?[a-zA-Z]+[a-zA-Z0-9-_]*", message = "Invalid chat link") String chatLink);
@@ -108,10 +108,10 @@ public interface MaxBotClient {
   );
 
   @DeleteMapping(DISCARD_ADMIN_RIGHT)
-  ResultResponse discardAdmin(@ModelAttribute @Valid DiscardAdminMessage message);
+  ResultResponse discardAdmin(@SpringQueryMap @Valid DiscardAdminMessage message);
 
   @GetMapping(CHAT_MEMBERS)
-  ChatMembersResponse getChatMembers(@ModelAttribute @Valid CharMembersMessage message);
+  ChatMembersResponse getChatMembers(@SpringQueryMap @Valid CharMembersMessage message);
 
   @PostMapping(CHAT_MEMBERS)
   ResultResponse addChatMembers(
@@ -121,7 +121,7 @@ public interface MaxBotClient {
 
   @DeleteMapping(CHAT_MEMBERS)
   ResultResponse deleteChatMembers(
-      @ModelAttribute @Valid DeleteChatMemberMessage message
+      @SpringQueryMap @Valid DeleteChatMemberMessage message
   );
 
   @GetMapping(SUBSCRIPTION)
@@ -131,8 +131,8 @@ public interface MaxBotClient {
   ResultResponse addSubscription(@RequestBody @Valid AddSubscriptionMessage message);
 
   @DeleteMapping(SUBSCRIPTION)
-  ResultResponse deleteSubscription(@ModelAttribute @Valid DeleteSubscriptionMessage message);
+  ResultResponse deleteSubscription(@SpringQueryMap @Valid DeleteSubscriptionMessage message);
 
   @GetMapping(POLL)
-  Updates pollUpdates(@ModelAttribute @Valid PollMessage message);
+  Updates pollUpdates(@SpringQueryMap @Valid PollMessage message);
 }
