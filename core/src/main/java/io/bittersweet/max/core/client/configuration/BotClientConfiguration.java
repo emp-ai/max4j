@@ -4,6 +4,7 @@ import feign.Client;
 import feign.Contract;
 import feign.Feign;
 import feign.RequestInterceptor;
+import feign.Retryer;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.okhttp.OkHttpClient;
@@ -45,6 +46,7 @@ public class BotClientConfiguration {
         .requestInterceptor(accessTokenInterceptor())
         .client(client)
         .encoder(encoder)
+        .retryer(Retryer.NEVER_RETRY)
         .decoder(decoder)
         .contract(contract)
         .target(MaxBotClient.class, properties.getClientUrl());

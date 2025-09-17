@@ -6,6 +6,8 @@ import io.bittersweet.max.core.method.subscription.response.Updates;
 import io.bittersweet.max.longpollingbot.client.LongPollingMaxBotClient;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -17,14 +19,16 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class LongPollingBotProducer implements LongPollingBotUpdateProducer {
+final class LongPollingBotProducer implements LongPollingBotUpdateProducer {
 
   private final LongPollingMaxBotClient longPollingMaxBotClient;
+  private final ExecutorService consumerExecutor = Executors.newSingleThreadExecutor();
   private final ScheduledExecutorService executor;
   private final List<LongPollingBotUpdateListener> listeners;
 
   private boolean running = false;
   private int attempt = 0;
+  private final int retries = 3;
 
   @PostConstruct
   private void init() {
@@ -57,12 +61,12 @@ class LongPollingBotProducer implements LongPollingBotUpdateProducer {
   @Override
   public void consumeBatch(Updates updates) {
     log.trace("Received updates batch; size - {}, marker - {}", updates.getUpdates().size(), updates.getMarker());
-    updates.getUpdates().forEach(this::notify);
+    updates.getUpdates().forEach(update -> consumerExecutor.execute(() -> notify(update)));
   }
 
   private void connect() {
-    while (!running) {
-      log.info("Trying to connect to max bot; attempt - {}", attempt);
+    while (!running && attempt <= retries) {
+      log.info("Trying to connect to max bot; attempt - {} of {}", attempt, retries);
       try {
         ResponseEntity<String> result = longPollingMaxBotClient.ping();
         running = result.getStatusCode().is2xxSuccessful();

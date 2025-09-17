@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConditionalOnProperty(value = "bittersweet.max.long-polling.enabled")
-public class MaxBotErrorDecoder implements ErrorDecoder {
+public class LongPollingBotErrorDecoder implements ErrorDecoder {
 
   private final ErrorDecoder defaultErrorDecoder = new Default();
 

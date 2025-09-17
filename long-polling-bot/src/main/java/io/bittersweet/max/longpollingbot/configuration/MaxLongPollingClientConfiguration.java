@@ -45,7 +45,7 @@ public class MaxLongPollingClientConfiguration {
       Encoder encoder,
       Client client,
       Contract contract,
-      MaxBotErrorDecoder errorDecoder
+      LongPollingBotErrorDecoder errorDecoder
   ) {
     return Feign.builder()
         .requestInterceptor(accessTokenInterceptor())
@@ -65,7 +65,7 @@ public class MaxLongPollingClientConfiguration {
   @Bean
   @ConditionalOnProperty(value = "bittersweet.max.long-polling.enabled")
   public Retryer maxBotConnectionRetryer() {
-    return new Default(500, SECONDS.toMillis(2), 10);
+    return new Default(500, SECONDS.toMillis(10), 100);
   }
 }
 

@@ -27,16 +27,22 @@ import io.bittersweet.max.core.method.subscription.request.PollMessage;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "bittersweet.max.enabled", havingValue = "true")
 public class MaxBot {
 
   private final MaxBotClient client;
 
-  public <T extends BotResponse> T execute(@NotNull BotMethod method) {
+  public   <T extends BotResponse> T execute(@NotNull BotMethod method) {
+
+  };
+
+  private  <T extends BotResponse> T execute(@NotNull BotMethod method) {
     BotResponse response = switch (method.getMethod()) {
       case BOT_INFO -> client.getBotInfo();
       case BOT_INFO_EDIT -> client.getBotInfo((EditBotMessage) method);
