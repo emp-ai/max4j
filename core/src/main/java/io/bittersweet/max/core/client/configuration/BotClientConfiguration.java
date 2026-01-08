@@ -5,10 +5,12 @@ import feign.Contract;
 import feign.Feign;
 import feign.RequestInterceptor;
 import feign.Retryer;
+import feign.Retryer.Default;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.okhttp.OkHttpClient;
 import io.bittersweet.max.core.client.client.MaxBotClient;
+import io.bittersweet.max.core.client.configuration.MaxBotProperties.RetryConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -17,6 +19,7 @@ import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 
 @Import(FeignClientsConfiguration.class)
 @Configuration
@@ -25,13 +28,14 @@ import org.springframework.context.annotation.Import;
 public class BotClientConfiguration {
 
   private final MaxBotProperties properties;
-  private final String ACCESS_TOKEN_PARAM_NAME = "access_token";
 
-  @ConditionalOnMissingBean
+  @ConditionalOnProperty(name = "bittersweet.max.client.okhttp.enabled", havingValue = "true")
+  @ConditionalOnProperty(name = "bittersweet.max.enabled", havingValue = "true")
   @Bean
-  public Client okHttpClient() {
+  public Client maxOkHttpClient() {
     return new OkHttpClient();
   }
+
 
   @ConditionalOnProperty(name = "bittersweet.max.enabled", havingValue = "true")
   @ConditionalOnMissingBean(MaxBotClient.class)
@@ -46,14 +50,25 @@ public class BotClientConfiguration {
         .requestInterceptor(accessTokenInterceptor())
         .client(client)
         .encoder(encoder)
-        .retryer(Retryer.NEVER_RETRY)
+        .retryer(maxBotRetryer())
         .decoder(decoder)
         .contract(contract)
         .target(MaxBotClient.class, properties.getClientUrl());
   }
 
-  private RequestInterceptor accessTokenInterceptor()  {
-    return (requestTemplate) -> requestTemplate.query(ACCESS_TOKEN_PARAM_NAME, properties.getApiKey());
+  @ConditionalOnProperty(name = "bittersweet.max.enabled", havingValue = "true")
+  public Retryer maxBotRetryer() {
+    RetryConfig retryConfig = properties.getRetry();
+    return retryConfig.isEnabled() ? new Default(
+        retryConfig.getInitialDelay(),
+        retryConfig.getMaxDelay(),
+        retryConfig.getAttempts()
+    ) :
+        Retryer.NEVER_RETRY;
+  }
+
+  private RequestInterceptor accessTokenInterceptor() {
+    return (requestTemplate) -> requestTemplate.header(HttpHeaders.AUTHORIZATION, properties.getApiKey());
   }
 
 }

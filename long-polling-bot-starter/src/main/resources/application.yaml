@@ -3,6 +3,6 @@ bittersweet:
     enabled: ${MAX_API_KEY:true}
     api-key: ${MAX_API_KEY:test}
     client-url: ${MAX_CLIENT_URL:https://botapi.max.ru}
-    long-polling:
+    long-poll:
       enabled: true
-      pool-size: 20
+      limit: 100

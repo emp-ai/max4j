@@ -3,3 +3,11 @@ bittersweet:
     api-key: ${MAX_API_KEY:}
     enabled: ${MAX_API_KEY:}
     client-url: ${MAX_CLIENT_UR:https://botapi.max.ru}
+    client:
+      okhttp:
+        enabled: true
+    retry:
+      attempts: 3
+      initial-delay: 100
+      max-delay: 1000
+      enabled: true

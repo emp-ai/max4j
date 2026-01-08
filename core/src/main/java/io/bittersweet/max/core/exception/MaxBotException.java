@@ -1,20 +1,22 @@
 package io.bittersweet.max.core.exception;
 
-import feign.Request;
-import feign.Request.HttpMethod;
-import feign.RetryableException;
-import java.util.Date;
+import lombok.Getter;
 
-public class MaxBotException extends RetryableException {
+@Getter
+public class MaxBotException extends RuntimeException{
+
+  private final int status;
 
   public MaxBotException(
       int status,
-      String message,
-      HttpMethod httpMethod,
-      Throwable cause,
-      Date retryAfter,
-      Request request
+      String message
   ) {
-    super(status, message, httpMethod, cause, retryAfter, request);
+    super(message);
+    this.status = status;
+  }
+
+  public MaxBotException(String message, int status, Throwable cause) {
+    super(message, cause);
+    this.status = status;
   }
 }

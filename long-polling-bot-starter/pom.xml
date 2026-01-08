@@ -9,7 +9,7 @@
     <version>0.0.1</version>
   </parent>
 
-  <artifactId>long-polling-bot</artifactId>
+  <artifactId>long-polling-bot-starter</artifactId>
   <version>0.0.3-SNAPSHOT</version>
 
   <properties>

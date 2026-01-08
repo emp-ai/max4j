@@ -15,7 +15,8 @@ import org.springframework.validation.annotation.Validated;
 public class MaxBotProperties {
 
   /** Enable or disable bot */
-  private Boolean enabled;
+  @NotNull
+  private Boolean enabled = false;
 
   /** API Key of your MAX bot */
   @NotEmpty
@@ -25,19 +26,41 @@ public class MaxBotProperties {
   @NotEmpty
   private String clientUrl = "https://botapi.max.ru";
 
-  /** Configuration for long-polling bot */
   @Valid
   @NotNull
-  private BotConfig longPolling;
+  private ClientConfig client;
+
+  @Valid
+  @NotNull
+  private RetryConfig retry;
 
   @Getter
   @Setter
-  public static class BotConfig {
+  public static class ClientConfig {
 
-    /** Bot is enabled */
-    private boolean enabled = true;
+    @Valid
+    @NotNull
+    private Client okhttp;
 
-    /** Pool size for executor */
-    private int poolSize = 10;
+    @Getter
+    @Setter
+    public static class Client {
+
+      private boolean enabled = false;
+
+    }
+  }
+
+  @Getter
+  @Setter
+  public static class RetryConfig {
+
+    private boolean enabled = false;
+
+    private long initialDelay = 100;
+
+    private long maxDelay = 1000;
+
+    private int attempts = 3;
   }
 }

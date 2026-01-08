@@ -13,7 +13,7 @@
 
   <modules>
     <module>core</module>
-    <module>long-polling-bot</module>
+    <module>long-polling-bot-starter</module>
   </modules>
 
   <groupId>io.bittersweet.max</groupId>
