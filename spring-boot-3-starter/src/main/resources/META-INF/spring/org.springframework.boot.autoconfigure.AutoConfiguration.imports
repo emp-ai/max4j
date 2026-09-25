@@ -1,0 +1,2 @@
+io.bittersweet.max.springboot.Max4jAutoConfiguration
+io.bittersweet.max.springboot.webhook.Max4jWebhookAutoConfiguration
