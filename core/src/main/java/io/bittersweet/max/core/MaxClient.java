@@ -8,10 +8,12 @@ import io.bittersweet.max.core.api.MessagesApi;
 import io.bittersweet.max.core.api.SubscriptionsApi;
 import io.bittersweet.max.core.api.UploadApi;
 import io.bittersweet.max.core.client.generated.ApiClient;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javax.net.ssl.SSLContext;
 
 /**
  * Entry point for the MAX Bot API.
@@ -97,6 +99,7 @@ public final class MaxClient {
     private Duration readTimeout = Duration.ofSeconds(30);
     private ObjectMapper objectMapper;
     private Consumer<HttpRequest.Builder> requestCustomizer;
+    private SSLContext sslContext = MaxSslContext.defaultSslContext();
 
     private Builder(String accessToken) {
       if (accessToken == null || accessToken.isBlank()) {
@@ -133,8 +136,20 @@ public final class MaxClient {
       return this;
     }
 
+    /**
+     * Overrides the TLS context used for MAX API calls.
+     *
+     * <p>By default max4j uses the JVM trust store plus the Russian Trusted Root and Sub CA
+     * certificates required by {@code platform-api2.max.ru}.</p>
+     */
+    public Builder sslContext(SSLContext sslContext) {
+      this.sslContext = Objects.requireNonNull(sslContext, "sslContext");
+      return this;
+    }
+
     public MaxClient build() {
       ApiClient apiClient = new ApiClient();
+      apiClient.setHttpClientBuilder(HttpClient.newBuilder().sslContext(sslContext));
       apiClient.updateBaseUri(baseUrl);
       apiClient.setConnectTimeout(connectTimeout);
       apiClient.setReadTimeout(readTimeout);
