@@ -11,7 +11,7 @@
 
   <name>max4j</name>
   <description>Java integration for the MAX Bot API</description>
-  <url>https://github.com/bababebr/max4j</url>
+  <url>https://github.com/emp-ai/max4j</url>
 
   <modules>
     <module>core</module>
@@ -73,7 +73,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/bababebr/max4j</url>
+      <url>https://maven.pkg.github.com/emp-ai/max4j</url>
     </repository>
   </distributionManagement>
 </project>
