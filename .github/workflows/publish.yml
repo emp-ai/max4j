@@ -1,27 +1,95 @@
 name: Publish Maven package
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing protected release tag (vX.Y.Z)
+        required: true
+        type: string
+      registry:
+        description: Target registry (Central requires account/namespace setup)
+        required: true
+        default: github
+        type: choice
+        options: [github, central]
 
 permissions:
   contents: read
-  packages: write
+
+concurrency:
+  group: publish-${{ inputs.registry }}-${{ inputs.tag }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
+  validate:
+    if: github.ref == 'refs/heads/main' && github.repository == 'emp-ai/max4j'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate release tag and version
+        id: release
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_REGISTRY: ${{ inputs.registry }}
+        run: python3 .github/scripts/validate_release.py
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: release
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "21"
-          cache: maven
-          server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
-      - name: Publish
-        run: ./mvnw --batch-mode deploy
+          server-id: ${{ inputs.registry }}
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      # Publication never restores a build/PR Maven cache.
+      # Verify the complete reactor before deploying any module.
+      - name: Verify all modules
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+      - name: Publish to GitHub Packages
+        if: inputs.registry == 'github'
+        run: ./mvnw --batch-mode --no-transfer-progress deploy -DskipTests
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_USERNAME: ${{ github.actor }}
+          MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate Central credentials
+        if: inputs.registry == 'central'
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        shell: bash
+        run: |
+          for name in CENTRAL_USERNAME CENTRAL_PASSWORD MAVEN_GPG_KEY MAVEN_GPG_PASSPHRASE; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing release environment secret: $name (see docs/RELEASING.md)"
+              exit 1
+            fi
+          done
+      - name: Upload signed release to Central for portal review
+        if: inputs.registry == 'central'
+        run: ./mvnw --batch-mode --no-transfer-progress -Pcentral-release deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

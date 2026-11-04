@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a reproducible problem in max4j
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Never include bot tokens, webhook secrets or real user data. Report security issues privately using SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: max4j version and Java/Spring Boot versions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Include sanitized code or a failing test.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
