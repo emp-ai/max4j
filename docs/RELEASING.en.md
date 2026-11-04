@@ -32,26 +32,32 @@ development version, not a Central release. GitHub Maven downloads require authe
 
 ## Maven Central prerequisites
 
-`io.bittersweet.max` is preserved to avoid silently changing consumers' coordinates.
-Publishing requires verification of the corresponding namespace.
+The owner confirmed the `io.github.bababebr` namespace in Central. Modules use the child
+`groupId` `io.github.bababebr.max4j`. No DNS verification of `io.bittersweet.max` is needed.
+The Central profile has been built locally with signing disabled; signing and upload remain untested.
 
-1. Create an account at https://central.sonatype.com/.
-2. Verify a namespace you control. Follow Central's domain/namespace verification for `io.bittersweet.max`.
-   If you do not control it, choose a verified namespace (for example a GitHub-derived namespace)
-   and migrate all modules, examples and consumers together. Owning `emp-ai/max4j` does not prove
-   ownership of `bittersweet.io`.
-3. Generate a Portal user token. Store its username/password as `CENTRAL_USERNAME` and `CENTRAL_PASSWORD`
+1. Sign in at https://central.sonatype.com/ with publishing access to `io.github.bababebr`.
+   A new publishing account must obtain access to that namespace first.
+2. Generate a Portal user token. Store its username/password as `CENTRAL_USERNAME` and `CENTRAL_PASSWORD`
    in GitHub **release environment secrets**, not in the repository or POM.
-4. Create an OpenPGP signing key, publish its public key as required by Central, and store the exported
+3. Create an OpenPGP signing key, publish its public key as required by Central, and store the exported
    private key in `MAVEN_GPG_KEY` and passphrase in `MAVEN_GPG_PASSPHRASE` in that environment.
    Follow Maven GPG's documented format/encoding for the BC signer. Never paste keys in issues.
-5. Prepare a reviewed tag as above, then run publication with registry `central`.
+4. Prepare a reviewed tag as above, then run publication with registry `central`.
    `central-release` supplies sources, Javadoc, signatures and required POM metadata.
-6. `autoPublish=false`: the signed deployment is uploaded for validation/review in Portal.
-   Review and publish it there. Registration, namespace verification and first publication
-   are separate steps; they have not been performed by this repository setup.
+5. `autoPublish=false`: the signed deployment is uploaded for validation/review in Portal.
+   Review and publish it there. This repository setup has not published a Central release.
 
 Ordinary builds do not load signing credentials or this publishing profile.
+
+## Consumer migration
+
+Changing Maven coordinates does not rename the Java packages `io.bittersweet.max.*` or
+the `max4j.*` configuration properties. After the first publication, change consumers'
+max4j dependency `groupId` from `io.bittersweet.max` to `io.github.bababebr.max4j` and select
+the published version. Do not include both coordinates: they contain the same Java classes.
+Existing consumers can keep the previously published coordinates until the new release is available.
+See [namespace and groupId rules](https://central.sonatype.org/faq/namespaces-vs-groupids/).
 
 ## References
 

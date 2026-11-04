@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>io.bittersweet.max</groupId>
+    <groupId>io.github.bababebr.max4j</groupId>
     <artifactId>max4j-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
