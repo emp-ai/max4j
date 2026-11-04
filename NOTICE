@@ -1,0 +1,14 @@
+max4j
+Copyright 2026 max4j contributors
+
+This product includes a MAX Bot API OpenAPI schema from:
+https://github.com/max-messenger/api-schema
+
+The vendored schema in core/src/main/openapi/max-api.yaml declares Apache 2.0
+in info.license. Its version is recorded in that file. MAX and its API are
+provided by their respective owners; max4j is an independent integration.
+
+Java API/model sources are generated with OpenAPI Generator:
+https://github.com/OpenAPITools/openapi-generator
+
+Retain applicable upstream notices when updating the schema or generated code.

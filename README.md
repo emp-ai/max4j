@@ -1,7 +1,16 @@
 # max4j
 
+[![Build](https://github.com/emp-ai/max4j/actions/workflows/build.yml/badge.svg)](https://github.com/emp-ai/max4j/actions/workflows/build.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 Java 21 клиент для [MAX Bot API](https://dev.max.ru/docs-api), сгенерированный из официальной
 [OpenAPI-схемы](https://github.com/max-messenger/api-schema), и автоконфигурация для Spring Boot 3.
+
+Независимый open source проект под Apache-2.0. Вклад в проект — через fork и pull request:
+[инструкция](CONTRIBUTING.md), [сообщения об уязвимостях](SECURITY.md),
+[релизы и Maven Central](docs/RELEASING.md). Первая публикация в Maven Central ещё не выполнена.
+Для GitHub Packages нужен Maven-репозиторий `https://maven.pkg.github.com/emp-ai/max4j`
+и авторизация GitHub Packages с `read:packages`; токен хранится в пользовательском `settings.xml`, не в POM.
 
 ## Модули
 
