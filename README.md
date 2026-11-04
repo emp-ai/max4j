@@ -12,6 +12,10 @@ Java 21 клиент для [MAX Bot API](https://dev.max.ru/docs-api), сген
 Для GitHub Packages нужен Maven-репозиторий `https://maven.pkg.github.com/emp-ai/max4j`
 и авторизация GitHub Packages с `read:packages`; токен хранится в пользовательском `settings.xml`, не в POM.
 
+Координаты библиотеки используют `groupId` **`io.github.bababebr.max4j`** из подтверждённого
+в Central namespace `io.github.bababebr`. Версия `0.1.0-SNAPSHOT` ниже предназначена для
+разработки; новые координаты появятся в реестре после отдельной публикации.
+
 ## Модули
 
 - `core` — модели, API-классы и HTTP-клиент без зависимости от Spring;
@@ -30,7 +34,7 @@ Java 21 клиент для [MAX Bot API](https://dev.max.ru/docs-api), сген
 
 ```xml
 <dependency>
-  <groupId>io.bittersweet.max</groupId>
+  <groupId>io.github.bababebr.max4j</groupId>
   <artifactId>core</artifactId>
   <version>0.1.0-SNAPSHOT</version>
 </dependency>
@@ -53,7 +57,7 @@ System.out.println(me.getUsername());
 
 ```xml
 <dependency>
-  <groupId>io.bittersweet.max</groupId>
+  <groupId>io.github.bababebr.max4j</groupId>
   <artifactId>spring-boot-3-starter</artifactId>
   <version>0.1.0-SNAPSHOT</version>
 </dependency>
@@ -130,3 +134,11 @@ MAX рекомендует webhook для production. Long polling остаёт�
 
 Замените `core/src/main/openapi/max-api.yaml` актуальным файлом из официального репозитория и
 запустите `mvnw verify`. Сгенерированные исходники находятся в `core/target` и не коммитятся.
+
+## Переход со старых координат
+
+После публикации выберите доступную версию и замените Maven `groupId` `io.bittersweet.max`
+на `io.github.bababebr.max4j` у зависимостей max4j. `artifactId` модулей сохраняются.
+Java-пакеты `io.bittersweet.max.*` и настройки `max4j.*` сохраняются, поэтому импорты
+и конфигурацию приложения переименовывать не нужно. Не подключайте одновременно
+старые и новые координаты: они содержат одинаковые Java-классы.
