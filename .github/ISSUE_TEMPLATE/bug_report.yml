@@ -1,26 +1,26 @@
-name: Bug report
-description: Report a reproducible problem in max4j
+name: Ошибка
+description: Сообщить о воспроизводимой проблеме в max4j
 labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: Never include bot tokens, webhook secrets or real user data. Report security issues privately using SECURITY.md.
+      value: Не добавляйте токены бота, секреты webhook и реальные данные пользователей. Об уязвимостях сообщайте через закрытую форму из SECURITY.md. Можно писать на русском или английском.
   - type: input
     id: version
     attributes:
-      label: max4j version and Java/Spring Boot versions
+      label: Версии max4j, Java и Spring Boot
     validations:
       required: true
   - type: textarea
     id: reproduce
     attributes:
-      label: Minimal reproduction
-      description: Include sanitized code or a failing test.
+      label: Минимальный пример воспроизведения
+      description: Приложите код с вымышленными данными или падающий тест.
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected and actual behavior
+      label: Ожидаемое и фактическое поведение
     validations:
       required: true

@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Report a security vulnerability privately
+  - name: Сообщить об уязвимости конфиденциально
     url: https://github.com/emp-ai/max4j/security/advisories/new
-    about: Do not disclose vulnerabilities or credentials in a public issue.
+    about: Не публикуйте уязвимости и ключи в открытых issue.

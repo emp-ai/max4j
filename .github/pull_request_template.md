@@ -1,14 +1,15 @@
-## What changed and why
+## Что изменилось и зачем
 
-Describe the problem, resulting behavior, and related public issue if any.
+Опишите проблему, поведение после изменения и связанную публичную issue, если она есть.
+Можно писать на русском или английском.
 
-## Validation
+## Проверки
 
-- [ ] `./mvnw --batch-mode verify` passed on Java 21.
-- [ ] A behavior change has an appropriate regression test.
-- [ ] Documentation/examples match any public API changes.
-- [ ] No real bot token, webhook secret, or user message is included.
-- [ ] Generated `target/` files are not committed.
+- [ ] `./mvnw --batch-mode verify` выполнена на Java 21 (Windows: `mvnw.cmd --batch-mode verify`).
+- [ ] Изменение поведения покрыто содержательным регрессионным тестом.
+- [ ] Документация и примеры соответствуют изменениям публичного API.
+- [ ] В PR нет настоящих токенов бота, секретов webhook и сообщений пользователей.
+- [ ] Сгенерированные файлы из `target/` не добавлены в Git.
 
-For an OpenAPI update, include its upstream version/commit and compatibility changes.
-For workflow/build changes, explain permissions, executed code and publication impact.
+При обновлении OpenAPI укажите версию или коммит источника и изменения совместимости.
+При изменении workflow или сборки объясните права доступа, выполняемый код и влияние на публикацию.

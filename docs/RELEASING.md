@@ -1,60 +1,85 @@
-# Releases and repository security
+# Релизы и настройки безопасности репозитория
 
-## Contribution checks
+[English](RELEASING.en.md)
 
-`Build / verify` runs Maven tests and release-validation tests on Java 21.
-Dependency review rejects newly introduced high/critical advisories in PR dependency changes.
-Dependabot checks Maven and GitHub Actions weekly. CodeQL default setup analyzes Java and workflows.
-Actions are pinned to full commit SHAs. External PR CI needs maintainer approval.
+## Что уже настроено в GitHub
 
-`main` requires a PR, the `verify` and `dependency-review` checks, review/code-owner review
-and resolved conversations.
-Administrators have a PR-only bypass so a sole maintainer can merge their own verified PR;
-they cannot bypass these rules with a direct push. Never use bypass to ignore failed checks.
-`v*` tags cannot be rewritten or deleted. Public visibility does not grant write access.
-Publication is not triggered by a PR or an ordinary push to `main`.
+- `Build / verify` запускает Maven-тесты и проверки защиты релизов на Java 21.
+- `dependency-review` блокирует новые зависимости с известными уязвимостями высокой
+  и критической серьёзности, обнаруженными в изменениях PR.
+- Dependabot проверяет Maven и GitHub Actions раз в неделю. CodeQL анализирует Java и workflow.
+- Включены оповещения об уязвимостях, сканирование секретов, защита push от известных
+  форматов секретов и закрытые сообщения об уязвимостях.
+- Actions ограничены разрешёнными источниками и закреплены полными SHA коммитов.
+  По умолчанию токен workflow имеет права только на чтение и не может одобрять PR.
+- Workflow из fork внешнего участника запускается после подтверждения сопровождающего.
+- В `main` изменения попадают через PR с проверками `verify` и `dependency-review`,
+  ревью владельца кода и закрытыми обсуждениями. Прямой push, force push и удаление `main` запрещены.
+- Слияние выполняется через squash, история остаётся линейной.
+- Теги `v*` нельзя перезаписывать и удалять.
+- Публикация запускается вручную из `main` и требует подтверждения окружения `release`.
+  Для него разрешена только ветка `main`; администратор не может обойти защиту окружения.
 
-## GitHub Packages release
+Чтобы единственный сопровождающий мог сливать собственные проверенные PR, для администратора
+есть исключение только на слияние через PR. Оно не разрешает прямой push в `main`.
+Не используйте исключение, чтобы игнорировать упавшие проверки.
+Публичность репозитория не даёт посетителям права на запись.
 
-1. Update all three POM versions to non-SNAPSHOT `X.Y.Z` in a PR. Run the full build.
-2. Merge the reviewed PR. Create and push tag `vX.Y.Z` at that reviewed commit on `main`.
-3. Run **Publish Maven package** from `main` with that tag and registry `github`.
-4. Validation rejects malformed/missing tags, commits outside `main`, snapshots and inconsistent POMs.
-5. Approve the `release` environment as a maintainer. Self-review is allowed for a sole maintainer;
-   environment protections cannot be bypassed by admins.
-6. The full reactor is verified before any module is deployed. Publish uses the short-lived
-   `GITHUB_TOKEN` with `packages: write`, without restoring a Maven cache.
+Обычный push в `main` и PR не запускают публикацию пакетов.
+GitHub Packages и Maven Central используют разные учётные данные.
 
-Never replace a stable version: bump it for corrections. The current `0.1.0-SNAPSHOT` is a
-development version, not a Central release. GitHub Maven downloads require authentication.
+## Релиз в GitHub Packages
 
-## Maven Central prerequisites
+1. В отдельном PR обновите версии во всех трёх POM до `X.Y.Z` без `SNAPSHOT`.
+   Запустите полную сборку.
+2. Слейте проверенный PR. Создайте и отправьте тег `vX.Y.Z` на этом коммите `main`.
+3. На вкладке **Actions** выберите **Publish Maven package** → **Run workflow**.
+   Укажите ветку `main`, существующий тег и реестр `github`.
+4. Проверка отклонит неверный или отсутствующий тег, коммит вне истории `main`,
+   SNAPSHOT-версию и несовпадающие версии модулей.
+5. Подтвердите запуск задания в окружении `release` (**Review deployments**).
+   Единственный сопровождающий может подтвердить собственный запуск.
+6. Все модули проходят проверки до публикации первого из них. Используется временный
+   `GITHUB_TOKEN` с правом `packages: write`; Maven-кэш из сборок PR не восстанавливается.
 
-`io.bittersweet.max` is preserved to avoid silently changing consumers' coordinates.
-Publishing requires verification of the corresponding namespace.
+Стабильную версию нельзя заменять: для исправления выпускайте новую.
+Текущая `0.1.0-SNAPSHOT` — версия разработки, а не релиз Maven Central.
+Для скачивания Maven-пакетов из GitHub нужна авторизация, даже если репозиторий публичный.
 
-1. Create an account at https://central.sonatype.com/.
-2. Verify a namespace you control. Follow Central's domain/namespace verification for `io.bittersweet.max`.
-   If you do not control it, choose a verified namespace (for example a GitHub-derived namespace)
-   and migrate all modules, examples and consumers together. Owning `emp-ai/max4j` does not prove
-   ownership of `bittersweet.io`.
-3. Generate a Portal user token. Store its username/password as `CENTRAL_USERNAME` and `CENTRAL_PASSWORD`
-   in GitHub **release environment secrets**, not in the repository or POM.
-4. Create an OpenPGP signing key, publish its public key as required by Central, and store the exported
-   private key in `MAVEN_GPG_KEY` and passphrase in `MAVEN_GPG_PASSPHRASE` in that environment.
-   Follow Maven GPG's documented format/encoding for the BC signer. Never paste keys in issues.
-5. Prepare a reviewed tag as above, then run publication with registry `central`.
-   `central-release` supplies sources, Javadoc, signatures and required POM metadata.
-6. `autoPublish=false`: the signed deployment is uploaded for validation/review in Portal.
-   Review and publish it there. Registration, namespace verification and first publication
-   are separate steps; they have not been performed by this repository setup.
+## Что осталось для Maven Central
 
-Ordinary builds do not load signing credentials or this publishing profile.
+Профиль `central-release` уже добавлен: он собирает исходники, Javadoc, подписи
+и метаданные POM. Локально проверено создание артефактов с отключённым подписанием.
+Регистрация, подтверждение namespace, подписание и загрузка ещё не выполнены.
 
-## References
+`groupId` сохранён как `io.bittersweet.max`, чтобы существующие подключения не изменились
+без предупреждения. Публикация требует подтверждения соответствующего namespace.
 
-- [Central requirements](https://central.sonatype.org/publish/requirements/)
-- [Central Maven plugin](https://central.sonatype.org/publish/publish-portal-maven/)
-- [Central namespaces](https://central.sonatype.org/register/namespace/)
-- [Maven GPG signer](https://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html)
-- [GitHub Maven authentication](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
+1. Создайте аккаунт в [Central Publisher Portal](https://central.sonatype.com/).
+2. Подтвердите namespace, которым вы владеете. Для `io.bittersweet.max` следуйте правилам
+   проверки домена/namespace в Central. Владение `emp-ai/max4j` не подтверждает владение
+   `bittersweet.io`. Если этот namespace не ваш, выберите доступный вам подтверждённый
+   namespace, например связанный с GitHub, и согласованно обновите модули, примеры
+   и все приложения, использующие библиотеку.
+3. Выпустите токен Portal. В репозитории откройте **Settings → Environments → release**
+   и добавьте его username и password в **Environment secrets**:
+   `CENTRAL_USERNAME` и `CENTRAL_PASSWORD`.
+4. Создайте OpenPGP-ключ для подписания. Опубликуйте открытый ключ по требованиям Central.
+   Экспортированный закрытый ключ сохраните в секрете `MAVEN_GPG_KEY`, пароль от него —
+   в `MAVEN_GPG_PASSPHRASE` того же окружения. Формат и кодировку берите из документации
+   Maven GPG для BC signer. Не добавляйте ключи в POM, Git или issues.
+5. Подготовьте проверенный релизный тег, как описано выше, и запустите workflow
+   с реестром `central`. Полная сборка будет проверена перед отправкой.
+6. При `autoPublish=false` подписанный пакет загружается в Portal для проверки.
+   Просмотрите результат и отдельно опубликуйте его в Portal.
+
+Обычная сборка не включает этот профиль и не загружает ключи подписания.
+Секреты Maven Central пока не созданы: их значения появятся после регистрации и настройки ключа.
+
+## Ссылки на документацию
+
+- [Требования Central](https://central.sonatype.org/publish/requirements/)
+- [Maven-плагин Central](https://central.sonatype.org/publish/publish-portal-maven/)
+- [Подтверждение namespace](https://central.sonatype.org/register/namespace/)
+- [Подписание Maven GPG](https://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html)
+- [Авторизация Maven в GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
