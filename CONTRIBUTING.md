@@ -1,40 +1,61 @@
-# Contributing to max4j
+# Как участвовать в разработке max4j
 
-Contributions are welcome through a fork and pull request targeting `main`.
-Discuss substantial API changes in an issue first. An internal tracker ID is not required.
+[English](CONTRIBUTING.en.md)
 
-## Build and tests
+Создайте fork репозитория и отправьте pull request в `main`.
+Существенные изменения публичного API сначала обсудите в issue. Номер задачи
+из внутреннего трекера не требуется. Issues и PR можно писать на русском или английском.
 
-Install Java 21 and run `./mvnw --batch-mode verify` (Windows: `mvnw.cmd --batch-mode verify`).
-Maven Wrapper downloads Maven and dependencies. Unit tests use synthetic values; no MAX bot token is needed.
-Run release guard tests with `python3 -m unittest discover -s .github/scripts/tests -v`.
+## Сборка и проверки
 
-The core client/models are generated from `core/src/main/openapi/max-api.yaml` during the build.
-Change the schema or generator configuration rather than editing generated files in `target/`.
-Document the upstream version/commit and retain its license and attribution when updating it.
+Установите Java 21 и запустите:
 
-Add focused tests for behavior changes, preserve public APIs where possible,
-and update examples for deliberate breaking changes. Use descriptive titles such as
-`fix: validate webhook secret` or `feat: support a new update type`.
+```bash
+./mvnw --batch-mode verify
+```
 
-## Pull requests and CI
+В Windows используйте `mvnw.cmd --batch-mode verify`. Maven Wrapper скачает Maven
+и зависимости. Тесты используют вымышленные данные, токен бота MAX для них не нужен.
+Проверки защиты релизов запускаются отдельно:
 
-Explain the problem and resulting behavior, then describe validation.
-CI runs on GitHub-hosted runners with read-only repository access. External contributors' workflow
-runs require maintainer approval; this is separate from review/merge approval.
-Review workflow, Maven plugin, wrapper and dependency changes as executable code.
-Never include real credentials, customer messages, or production configuration in a PR or issue.
+```bash
+python3 -m unittest discover -s .github/scripts/tests -v
+```
 
-Maintainers merge after tests and review. Dependency updates are not automatically approved.
-Protected `main` requires a PR and CI; critical files have code owners.
-Administrators can use an audited PR-only bypass when maintaining their own PRs;
-it does not permit direct pushes or routine merging of failed CI.
+В Windows вместо `python3` используйте доступную команду Python 3, например `python`.
 
-## Licensing
+Клиент и модели `core` генерируются из `core/src/main/openapi/max-api.yaml` при сборке.
+Меняйте схему или настройки генератора, а не файлы в `target/`. При обновлении схемы
+указывайте версию или коммит источника, сохраняйте его лицензию и сведения об авторстве.
 
-The project is licensed under Apache-2.0. By submitting a contribution, you agree to license
-it under Apache-2.0 and confirm you have the rights to submit it.
-Keep third-party notices and identify copied/generated third-party material.
-No separate CLA or DCO check is currently required.
+Для изменения поведения добавляйте содержательный тест. По возможности сохраняйте
+совместимость публичного API; при намеренном нарушении совместимости обновляйте примеры.
+Используйте понятные заголовки, например `fix: проверка секрета webhook`
+или `feat: поддержка нового типа обновления`.
 
-See [SECURITY.md](SECURITY.md) and [docs/RELEASING.md](docs/RELEASING.md).
+## Pull request и CI
+
+Опишите проблему, поведение после изменения и выполненные проверки.
+CI запускается на серверах GitHub с правами только на чтение репозитория.
+Запуск workflow из fork внешнего участника требует подтверждения сопровождающего;
+это отдельное действие от проверки и слияния PR.
+
+Изменения workflow, Maven-плагинов, Wrapper и зависимостей нужно проверять как
+исполняемый код. Не добавляйте в PR или issue настоящие ключи, сообщения пользователей
+и конфигурацию рабочего окружения.
+
+Изменения сливаются после проверок и ревью. Обновления зависимостей автоматически
+не одобряются. Для `main` обязательны PR, проверки `verify` и `dependency-review`,
+ревью владельца кода и закрытые обсуждения. У критичных файлов назначен CODEOWNERS.
+Для единственного сопровождающего предусмотрено исключение администратора только
+при слиянии PR: оно не разрешает прямой push в `main`. Не используйте его,
+чтобы игнорировать упавшие проверки.
+
+## Лицензия
+
+Проект распространяется под Apache-2.0. Отправляя изменения, вы соглашаетесь
+предоставить их под Apache-2.0 и подтверждаете, что имеете право их передать.
+Сохраняйте сведения о сторонних компонентах и отмечайте заимствованные
+или сгенерированные материалы. Отдельное CLA и проверка DCO сейчас не требуются.
+
+См. [правила безопасности](SECURITY.md) и [инструкцию по релизам](docs/RELEASING.md).

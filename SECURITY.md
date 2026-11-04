@@ -1,16 +1,19 @@
-# Security policy
+# Безопасность
 
-Report vulnerabilities through [GitHub private vulnerability reporting](https://github.com/emp-ai/max4j/security/advisories/new).
-Include the affected version, impact and a minimal reproduction with synthetic data.
-Do not publish credentials, user conversations or exploit details in a public issue/PR.
+[English](SECURITY.en.md)
 
-Security fixes target the current development branch and latest supported release.
-Older versions do not have a guaranteed backport policy. This early-stage project does not
-promise a fixed response/resolution SLA or a bug bounty.
+Сообщайте об уязвимостях через [закрытую форму GitHub](https://github.com/emp-ai/max4j/security/advisories/new).
+Укажите затронутую версию, возможные последствия и минимальный пример на вымышленных данных.
+Не публикуйте ключи, переписку пользователей и подробности эксплуатации в открытых issue или PR.
 
-Load MAX bot tokens and webhook secrets from your application's secret store/environment.
-For production webhooks, enable and verify the webhook secret over HTTPS.
-Rotate exposed credentials even if a commit containing them has been removed from branch history.
+Исправления безопасности вносятся в текущую ветку разработки и последнюю поддерживаемую
+релизную версию. Перенос исправлений в старые версии не гарантируется.
+У проекта на ранней стадии нет фиксированного SLA на ответ и исправление
+или программы вознаграждений за уязвимости.
 
-Contribution CI has no publication credentials. Releases use a separate protected environment
-and immutable release tags. See [the release guide](docs/RELEASING.md).
+Загружайте токен бота MAX и секрет webhook из хранилища секретов вашего приложения
+или переменных окружения. Для рабочего webhook включайте проверку секрета и используйте HTTPS.
+При утечке меняйте ключи, даже если содержащий их коммит уже удалён из истории ветки.
+
+У CI для внешних изменений нет ключей публикации. Релизы используют отдельное защищённое
+окружение и теги, которые нельзя перезаписать. Подробнее — в [инструкции по релизам](docs/RELEASING.md).

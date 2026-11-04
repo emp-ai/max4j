@@ -1,18 +1,20 @@
-# Getting Started
+# Разработка модуля core
 
-### Reference Documentation
+[English](HELP.en.md)
 
-For further reference, please consider the following sections:
+`core` содержит клиент MAX Bot API, модели и API-классы. Модуль не зависит от Spring.
+Версия схемы указана в [README](../README.md); сам файл — `src/main/openapi/max-api.yaml`.
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.5/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.5/maven-plugin/build-image.html)
-* [Spring Configuration Processor](https://docs.spring.io/spring-boot/3.5.5/specification/configuration-metadata/annotation-processor.html)
+Собирайте проект из корня репозитория на Java 21:
 
-### Maven Parent overrides
+```bash
+./mvnw --batch-mode verify
+```
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+Для сборки только `core` и необходимых ему модулей используйте
+`./mvnw --batch-mode -pl core -am verify`.
+В Windows замените `./mvnw` на `mvnw.cmd`.
 
+OpenAPI Generator создаёт исходники в `target/` при сборке. Не редактируйте их вручную
+и не добавляйте в Git: меняйте исходную схему или настройки генерации в POM.
+Для тестов токен бота не требуется. Правила участия — в [CONTRIBUTING.md](../CONTRIBUTING.md).
