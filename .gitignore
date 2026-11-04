@@ -1,0 +1,10 @@
+.idea/
+*.iml
+target/
+**/target/
+
+# Never commit bot credentials.
+.env
+application-local.yml
+application-local.yaml
+application-local.properties
