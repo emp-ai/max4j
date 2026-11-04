@@ -1,0 +1,10 @@
+# The maintainer reviews all changes, especially executable build/release code.
+* @bababebr
+/.github/ @bababebr
+/pom.xml @bababebr
+/**/pom.xml @bababebr
+/.mvn/ @bababebr
+/mvnw* @bababebr
+/LICENSE @bababebr
+/NOTICE @bababebr
+/core/src/main/openapi/ @bababebr

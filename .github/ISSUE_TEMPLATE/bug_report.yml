@@ -1,0 +1,26 @@
+name: Ошибка
+description: Сообщить о воспроизводимой проблеме в max4j
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Не добавляйте токены бота, секреты webhook и реальные данные пользователей. Об уязвимостях сообщайте через закрытую форму из SECURITY.md. Можно писать на русском или английском.
+  - type: input
+    id: version
+    attributes:
+      label: Версии max4j, Java и Spring Boot
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Минимальный пример воспроизведения
+      description: Приложите код с вымышленными данными или падающий тест.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ожидаемое и фактическое поведение
+    validations:
+      required: true
