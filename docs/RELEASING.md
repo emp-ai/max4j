@@ -7,7 +7,8 @@ Dependency review rejects newly introduced high/critical advisories in PR depend
 Dependabot checks Maven and GitHub Actions weekly. CodeQL default setup analyzes Java and workflows.
 Actions are pinned to full commit SHAs. External PR CI needs maintainer approval.
 
-`main` requires a PR, the `verify` check, review/code-owner review and resolved conversations.
+`main` requires a PR, the `verify` and `dependency-review` checks, review/code-owner review
+and resolved conversations.
 Administrators have a PR-only bypass so a sole maintainer can merge their own verified PR;
 they cannot bypass these rules with a direct push. Never use bypass to ignore failed checks.
 `v*` tags cannot be rewritten or deleted. Public visibility does not grant write access.
