@@ -38,7 +38,9 @@ The Central profile has been built locally with signing disabled; signing and up
 
 1. Sign in at https://central.sonatype.com/ with publishing access to `io.github.bababebr`.
    A new publishing account must obtain access to that namespace first.
-2. Generate a Portal user token. Store its username/password as `CENTRAL_USERNAME` and `CENTRAL_PASSWORD`
+2. Open https://central.sonatype.com/usertoken, choose **Generate User Token**, set its name and
+   expiration, and save both generated values before closing the dialog.
+   Store its username/password as `CENTRAL_USERNAME` and `CENTRAL_PASSWORD`
    in GitHub **release environment secrets**, not in the repository or POM.
 3. Create an OpenPGP signing key, publish its public key as required by Central, and store the exported
    private key in `MAVEN_GPG_KEY` and passphrase in `MAVEN_GPG_PASSPHRASE` in that environment.
@@ -49,6 +51,18 @@ The Central profile has been built locally with signing disabled; signing and up
    Review and publish it there. This repository setup has not published a Central release.
 
 Ordinary builds do not load signing credentials or this publishing profile.
+
+## Verify signing without publishing
+
+After adding the four secrets to the `release` environment, run **Actions → Verify Central signing →
+Run workflow** from `main`. Approve its protected environment job in **Review deployments**.
+It uses the release profile and BC signer to build and sign all POMs, JARs, sources and Javadoc.
+It then retrieves the public key from `keyserver.ubuntu.com` and verifies every signature with GPG.
+Secret values are not printed. The job has read-only repository access and does not use the Central token.
+
+This check permits a SNAPSHOT by skipping the Maven Enforcer release-version requirement.
+The actual publication workflow still requires stable, matching versions and a validated tag.
+The verification workflow has no `deploy` goal and does not create releases or upload packages.
 
 ## Consumer migration
 

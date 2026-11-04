@@ -1,0 +1,77 @@
+name: Verify Central signing
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-central-signing
+  cancel-in-progress: false
+
+jobs:
+  verify-signing:
+    if: github.ref == 'refs/heads/main' && github.repository == 'emp-ai/max4j'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Check signing secrets
+        env:
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        shell: bash
+        run: |
+          for name in MAVEN_GPG_KEY MAVEN_GPG_PASSPHRASE; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing release environment secret: $name"
+              exit 1
+            fi
+          done
+      - name: Build and sign all modules without deploying
+        # A signing check may run on a SNAPSHOT. Actual releases still require
+        # a stable tag/version through publish.yml; this workflow has no deploy goal.
+        run: ./mvnw --batch-mode --no-transfer-progress -Pcentral-release -Denforcer.skip=true clean verify
+        env:
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+      - name: Verify signatures using the published public key
+        env:
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GNUPGHOME
+          GNUPGHOME="$(mktemp -d "$RUNNER_TEMP/max4j-public-key.XXXXXX")"
+          chmod 700 "$GNUPGHOME"
+          key_metadata="$(printf '%s' "$MAVEN_GPG_KEY" | gpg --batch --with-colons --import-options show-only --import 2>/dev/null)"
+          fingerprint="$(awk -F: '$1 == "fpr" { print $10; exit }' <<< "$key_metadata")"
+          primary_keys="$(awk -F: '$1 == "sec" || $1 == "pub" { count++ } END { print count+0 }' <<< "$key_metadata")"
+          if [ "$primary_keys" -ne 1 ] || [[ ! "$fingerprint" =~ ^[0-9A-Fa-f]{40}$ ]]; then
+            echo "::error::Expected a single exported OpenPGP v4 signing key"
+            exit 1
+          fi
+          if ! gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys "$fingerprint" > "$GNUPGHOME/keyserver.log" 2>&1; then
+            echo "::error::Public signing key could not be retrieved from keyserver.ubuntu.com"
+            exit 1
+          fi
+          mapfile -d '' -t signatures < <(find target core/target spring-boot-3-starter/target -maxdepth 1 -type f -name '*.asc' -print0)
+          if [ "${#signatures[@]}" -lt 9 ]; then
+            echo "::error::Expected signatures for the parent POM and both modules' POM, JAR, sources and Javadoc"
+            exit 1
+          fi
+          for signature in "${signatures[@]}"; do
+            if ! gpg --batch --verify "$signature" "${signature%.asc}" > "$GNUPGHOME/verify.log" 2>&1; then
+              echo "::error::An artifact signature could not be verified with the published public key"
+              exit 1
+            fi
+          done
+          printf 'Verified %s artifact signatures using public key %s\n' "${#signatures[@]}" "$fingerprint"
